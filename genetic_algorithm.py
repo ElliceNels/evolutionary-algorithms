@@ -100,12 +100,11 @@ class GeneticAlgorithm:
         for generation in range(iterations):
 
             best_individuals = self.get_best_individuals()
-
             best_fitness = max(best_individuals.values())
 
             print(f"Generation {generation}: Best fitness = {best_fitness}")
 
-            #Stop if optimal solution found
+            # Stop if optimal solution found
             if best_fitness == self.chromosome_length:
                 print("Optimal solution found!")
                 break
@@ -136,34 +135,3 @@ class GeneticAlgorithm:
                 best_individuals[individual] = best_fitness
 
         return best_individuals
-
-def load_config(file_path):
-    import json
-
-    with open(file_path, "r") as file:
-        config = json.load(file)
-
-    return config
-
-def main():
-    config = load_config("config.json")
-    try:
-        crossover_rate = config["crossover_rate"]
-        mutation_rate = config["mutation_rate"]
-        number_of_offspring = config["number_of_offspring"]
-        population_size = config["population_size"]
-        crossover_signal = config["crossover_signal"]
-        chromosome_length = config["chromosome_length"]
-        iterations = config["iterations"]
-    except KeyError as e:
-        print(f"Missing configuration parameter: {e}")
-        return
-
-    ga = GeneticAlgorithm(crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length)
-
-    print(f"Initial population:\n{ga.get_population()}")
-    print(f"Final population:\n{ga.get_population()}")
-    print(f"Best individuals:\n{ga.run_evolution(iterations)}")
-
-if __name__ == "__main__":
-    main()
