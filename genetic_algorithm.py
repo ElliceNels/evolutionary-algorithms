@@ -161,16 +161,9 @@ def main():
 
     ga = GeneticAlgorithm(crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length)
 
-    print("Initial population:")
-    print(ga.get_population())
-
-    best_individuals = ga.run_evolution(iterations)
-
-    print("Final population:")
-    print(ga.get_population())
-
-    print("Best individuals:")
-    print(best_individuals)
+    print(f"Initial population:\n{ga.get_population()}")
+    print(f"Final population:\n{ga.get_population()}")
+    print(f"Best individuals:\n{ga.run_evolution(iterations)}")
 
 if __name__ == "__main__":
     main()
