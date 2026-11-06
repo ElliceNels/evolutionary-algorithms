@@ -137,25 +137,40 @@ class GeneticAlgorithm:
 
         return best_individuals
 
+def load_config(file_path):
+    import json
 
+    with open(file_path, "r") as file:
+        config = json.load(file)
 
-crossover_rate = 0.8
-mutation_rate = 0.01
-number_of_offspring = 2
-population_size = 5
-crossover_signal = 3
-chromosome_length = 5
-iterations = 50
+    return config
 
-ga = GeneticAlgorithm(crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length)
+def main():
+    config = load_config("config.json")
+    try:
+        crossover_rate = config["crossover_rate"]
+        mutation_rate = config["mutation_rate"]
+        number_of_offspring = config["number_of_offspring"]
+        population_size = config["population_size"]
+        crossover_signal = config["crossover_signal"]
+        chromosome_length = config["chromosome_length"]
+        iterations = config["iterations"]
+    except KeyError as e:
+        print(f"Missing configuration parameter: {e}")
+        return
 
-print("Initial population:")
-print(ga.get_population())
+    ga = GeneticAlgorithm(crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length)
 
-best_individuals = ga.run_evolution(iterations)
+    print("Initial population:")
+    print(ga.get_population())
 
-print("Final population:")
-print(ga.get_population())
+    best_individuals = ga.run_evolution(iterations)
 
-print("Best individuals:")
-print(best_individuals)
+    print("Final population:")
+    print(ga.get_population())
+
+    print("Best individuals:")
+    print(best_individuals)
+
+if __name__ == "__main__":
+    main()
