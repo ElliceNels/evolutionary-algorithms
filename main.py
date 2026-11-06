@@ -5,10 +5,12 @@ from genetic_algorithm import GeneticAlgorithm
 from config import Config
 
 def load_config(file_path: str | Path) -> Config:
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         config_data = json.load(file)
 
     return Config(**config_data)
+
+
 
 def main():
     config = load_config("config.json")

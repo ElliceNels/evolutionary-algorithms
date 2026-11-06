@@ -1,6 +1,9 @@
 import random
 
 class GeneticAlgorithm:
+    """
+    A class to represent a genetic algorithm.
+    """
 
     def __init__(self, crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length):
         self.crossover_rate = crossover_rate
@@ -13,6 +16,13 @@ class GeneticAlgorithm:
         self._initialise_population()
 
     def _initialise_population(self, seed=None):
+        """
+        Initialise the population with random individuals.
+
+        Args:
+            seed (int, optional): The seed for the random number generator. Defaults to None.
+        """
+
         if seed is not None:
             random.seed(seed)
 
@@ -28,6 +38,8 @@ class GeneticAlgorithm:
             self.current_population.append(chromosome)
 
     def _select_parent(self, population):
+        """Select a parent from the population using tournament selection."""
+
         individual1, individual2 = random.sample(population, 2)
 
         if self._check_fitness(individual1) >= self._check_fitness(individual2):
@@ -36,6 +48,15 @@ class GeneticAlgorithm:
         return individual2
 
     def _apply_crossover(self, individual1, individual2) -> list[str]:
+        """Apply crossover or reproduction to two individuals to produce offspring.
+
+        Args:
+            individual1 (str): The first individual.
+            individual2 (str): The second individual.
+
+        Returns:
+            list[str]: A list of the offspring produced by crossover or reproduction.
+        """
 
         # Decide whether crossover occurs
         if random.random() >= self.crossover_rate:
@@ -52,6 +73,15 @@ class GeneticAlgorithm:
         return [offspring1, offspring2]
 
     def _apply_mutation(self, individual) -> str:
+        """Apply mutation to an individual by flipping bits with a certain probability.
+
+        Args:
+            individual (str): The individual to mutate.
+
+        Returns:
+            str: The mutated individual.
+        """
+
         mutated_individual = ""
 
         for bit in individual:
@@ -66,39 +96,58 @@ class GeneticAlgorithm:
         return mutated_individual
 
     def _check_fitness(self, individual) -> int:
+        """Calculate the fitness score of an individual."""
+
         fitness_score = individual.count("0")
         return fitness_score
 
     def _generate_new_population(self, population):
+        """Perform selection, crossover, and mutation to generate a new population.
+
+        Args:
+            population (list[str]): The current population of individuals.
+
+        Returns:
+            list[str]: The new population of individuals after selection, crossover, and mutation.
+        """
+
         working_population = []
 
         while len(working_population) < self.population_size:
-
-            #Select two parents
+            # Select two parents
             parent1 = self._select_parent(population)
             parent2 = self._select_parent(population)
 
-            #Apply crossover or reproduction
+            # Apply crossover or reproduction
             offsprings = self._apply_crossover(parent1, parent2)
 
-            #Apply mutation to offspring
+            # Apply mutation to offspring
             for offspring in offsprings[:self.number_of_offspring]:
 
                 mutated_offspring = self._apply_mutation(offspring)
 
-                #Add to the new population
+                # Add to the new population
                 working_population.append(mutated_offspring)
 
-                #Stop if population is full
+                # Stop if population is full
                 if len(working_population) >= self.population_size:
                     break
 
         return working_population
 
     def run_evolution(self, iterations):
+        """Run the evolution process for a specified number of iterations.
+
+        Args:
+            iterations (int): The number of iterations to run the evolution process.
+
+        Returns:
+            dict[str, int]: A dictionary containing the best individuals and their fitness scores.
+        """
 
         for generation in range(iterations):
 
+            # Get the best individuals from the current population
             best_individuals = self.get_best_individuals()
             best_fitness = max(best_individuals.values())
 
@@ -119,6 +168,7 @@ class GeneticAlgorithm:
         return self.current_population
 
     def get_best_individuals(self, population=None) -> dict[str, int]:
+        """Get the best individuals from the population."""
 
         if population is None:
             population = self.current_population
