@@ -9,7 +9,7 @@ OPERATIONS = {
     "*": operator.mul,
     "/": lambda left, right: left / right if right != 0 else 0,
 }
-OPERANDS = ["1", "2", "3", "x"]
+OPERANDS = ["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "x"]
 
 class GeneticAlgorithm:
     """
@@ -43,10 +43,10 @@ class GeneticAlgorithm:
             self.current_population.append(self._new_individual())
 
     def _new_individual(self, depth=0):
-        """Generate a new random individual (chromosome) of the specified length.
+        """Generate a new random individual/tree ().
 
         Returns:
-            Node: A new random individual (chromosome).
+            Node: A new random individual (tree).
         """
         if depth >= self.max_depth:
             # Return a terminal node (leaf node) with a random value
@@ -84,14 +84,14 @@ class GeneticAlgorithm:
         Returns:
             list[Node]: A list of the offspring produced by crossover or reproduction.
         """
+        offspring1 = deepcopy(individual1)
+        offspring2 = deepcopy(individual2)
 
         # Decide whether crossover occurs
         if random.random() >= self.crossover_rate:
             # Reproduction: return copies of the parents
-            return [individual1, individual2]
+            return [offspring1, offspring2]
 
-        offspring1 = deepcopy(individual1)
-        offspring2 = deepcopy(individual2)
 
         # Use randomly selected crossover point to create offspring
         crossover_node1: Node = random.choice(list(offspring1.descendants) + [offspring1])
