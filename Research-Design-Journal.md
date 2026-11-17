@@ -1,9 +1,9 @@
 # MSc-Research-Notebook-EA
 
-- **Student Name:** [Your Name]
-- **Student ID:** [Your ID Number]
+- **Student Names:** Ellice Nelson, Dawid Jakubowski
+- **Student ID:** 23371323, 23384549
 - **Proposed Research Title:** [Working Title / Broad Topic Area]
-- **GitHub Repository Link:** [Paste URL here]
+- **GitHub Repository Link:** https://github.com/ElliceNels/evolutionary-algorithms
 
 ------------------------------------------------------------------------
 
@@ -61,29 +61,16 @@ In line with academic integrity policies, any use of digital tools (AI search en
 
 ## 4. Weekly Activity & Reflection Logs
 
-Update this section at the end of *every* week. Keep reflections concise, focusing on **actions taken**, **obstacles hit**, and **next steps**.
-
 ### Week 01: Focus Area - [e.g., Topic Selection]
 
 - **Activities Completed:**
-  - [Item 1]
-  - [Item 2]
 - **Key Insights / Discoveries:**
 - **Obstacles Encountered & How You Overcame Them:**
 - **Plan for Next Week:**
 
 ### Week 02: Focus Area - [e.g., Refining the Research Question]
 
-- 
-
-  ## **Activities Completed:**
-
+- **Activities Completed:**
 - **Key Insights / Discoveries:**
-
 - **Obstacles Encountered & How You Overcame Them:**
-
 - **Plan for Next Week:**
-
-*(Continue adding weekly blocks as the module progresses)*
-
-[**NOTE:**]{.underline} Make sure to regular commits to the GitHub repository as the research notebook is updated. These commits will also form part of the evaluation of your work.
