@@ -2,18 +2,16 @@
 
 - **Student Names:** Ellice Nelson, Dawid Jakubowski
 - **Student ID:** 23371323, 23384549
-- **Proposed Research Title:** [Working Title / Broad Topic Area]
+- **Proposed Research Title:** Examining the effects of dynamic versus static mutation in genetic algorithms on convergence speed and solution quality 
 - **GitHub Repository Link:** https://github.com/ElliceNels/evolutionary-algorithms
 
 ------------------------------------------------------------------------
 
 ## 1. Project Overview & Evolution Track
 
-Use this section to map out how your project evolves over the block. Whenever you change your research question, methodology, or scope, update this log.
-
 ### Current Working Research Question(s)
 
-> *Last Updated: [DD/MM/YYYY]* \* What is your precise, primary research question right now?
+> *Last Updated: [17/11/2026]* \* Does adaptive mutation improve the convergence speed and solution quality of Genetic Algorithms compared to fixed mutation strageties in continuous optimization problems?
 
 ### The Pivot Log
 
@@ -61,7 +59,7 @@ In line with academic integrity policies, any use of digital tools (AI search en
 
 ## 4. Weekly Activity & Reflection Logs
 
-### Week 01: Focus Area - [e.g., Topic Selection]
+### Week 01: Focus Area - Topic Selection and Literature Review
 
 - **Activities Completed:**
 - **Key Insights / Discoveries:**
