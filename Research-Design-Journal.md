@@ -124,7 +124,7 @@ TRAMSS is more complex than a standard GA because it uses two loops.
 - **Direct Connection to *Your* Project:**
 This paper demonstrates another adaptive mutation method by showing that adaptive mutation in continuous optimisation can involve changing the mutation step size, not only the mutation probability. 
 
-### Paper 1 — A Review on Genetic Algorithms / Katoch et al. (2021)
+### Paper 8 — A Review on Genetic Algorithms / Katoch et al. (2021)
 
 - **Full IEEE/APA Citation:**
 Katoch, S., Chauhan, S. S., & Kumar, V. (2021). A review on genetic algorithm: Past, present, and future. Multimedia Tools and Applications, 80, 8091–8126. https://doi.org/10.1007/s11042-020-10139-6
@@ -137,13 +137,18 @@ The paper covers a wide range of GA methods and applications, so some topics are
 - **Direct Connection to *Your* Project:**
 This paper supports the background section of our project by explaining how GAs work, how numerical solutions are represented, and how selection, crossover and mutation are used in continuous optimisation. Its discussion of premature convergence and the difficulty of choosing mutation settings helps explain why we are comparing adaptive and fixed mutation. It gives us a basis for understanding how these choices could affect convergence speed and solution quality.
 
-### [Paper 2 Short Title / Author Year]
+### Paper 2 — CEC 2005 Benchmark Functions / Suganthan et al. (2005)
 
 - **Full IEEE/APA Citation:**
+Suganthan, P. N., Hansen, N., Liang, J. J., Deb, K., Chen, Y.-P., Auger, A., & Tiwari, S. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization (Technical Report; KanGAL Report No. 2005005). Nanyang Technological University.
 - **Why did you select this paper?**
+We selected this report because it provides established benchmark functions and clear guidance for comparing optimisation algorithms fairly. It explains the functions and their properties, and describes how to measure convergence speed and solution quality.
 - **Key Findings & Methodology:**
+The report defines 25 continuous optimisation benchmark functions, including shifted versions of Sphere, Rosenbrock and Rastrigin, along with rotated, noisy and combined functions. It explains their formulas, search ranges, known optima and properties. This gives researchers a range of problems that test different difficulties, such as escaping local optima or handling interacting variables. The report also sets out a common testing procedure using 25 runs per problem, with 10, 30 and 50 variables. Each run receives a maximum of 10,000 function evaluations per variable. Solution quality is measured by the difference between the best value found and the known optimum, while convergence speed is assessed through the evaluations needed to reach a target accuracy. Researchers are asked to report averages, standard deviations, best and worst results, success rates and convergence graphs.
 - **Limitations/Weaknesses Identified:**
+The benchmark functions are artificial mathematical problems, so good results on them may not transfer to practical applications. The suite was published in 2005 and focuses on particular dimensions and problem types. It provides guidance for running and reporting experiments, but gives limited guidance on statistical significance testing.
 - **Direct Connection to *Your* Project:**
+This report helps us choose benchmark functions with different properties and explain why we selected them. Its evaluation guidelines give us a basis for comparing adaptive and fixed mutation using the same search bounds, evaluation budgets and stopping rules. Repeated runs and measures of variation will help us account for randomness. Measuring both final error and the evaluations needed to reach a target will allow us to examine solution quality and convergence speed separately.
 
 ### [Paper 2 Short Title / Author Year]
 
