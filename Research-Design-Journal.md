@@ -150,6 +150,30 @@ The benchmark functions are artificial mathematical problems, so good results on
 - **Direct Connection to *Your* Project:**
 This report helps us choose benchmark functions with different properties and explain why we selected them. Its evaluation guidelines give us a basis for comparing adaptive and fixed mutation using the same search bounds, evaluation budgets and stopping rules. Repeated runs and measures of variation will help us account for randomness. Measuring both final error and the evaluations needed to reach a target will allow us to examine solution quality and convergence speed separately. These benchmarks are all available in the Python library opfunu.
 
+### Paper 10: Population diversity
+
+- **Full IEEE/APA Citation:**
+Liu, K., Teng, Y., and Liu, F. (2025) ‘A study of gene expression programming algorithm for dynamically adjusting the parameters of genetic operators’, PLOS One, 20(6), e0321711, available: https://doi.org/10.1371/journal.pone.0321711.
+- **Why did you select this paper?**
+Provides a clear definiton of population diversity and how it is beneficial
+- **Key Findings & Methodology:**
+"Population diversity measures the degree of variation among individuals in a population and is critical for maintaining the global search capability of the algorithm. A higher diversity means that the population contains more varied solutions, thereby increasing the probability of finding the global optimum." 
+- **Direct Connection to *Your* Project:**
+Paper provides a clear definition of population diversity and encourages higher population diversity which can be achieved through mutations
+
+### Paper 11: Exploration vs. Exploitation
+
+- **Full IEEE/APA Citation:**
+Črepinšek, M., Liu, S.-H., and Mernik, M. (2013) ‘Exploration and exploitation in evolutionary algorithms: A survey’, ACM Computing Surveys (CSUR), 45(3), 35:1-35:33, available: https://doi.org/10.1145/2480741.2480752.
+- **Why did you select this paper?**
+Provides a clear definition of exploration and exploitation and the importance of both
+- **Key Findings & Methodology:**
+"Exploration is the process of visiting entirely new regions of a search space,
+whilst exploitation is the process of visiting those regions of a search space within
+the neighborhood of previously visited points. In order to be successful, a search algorithm needs to establish a good ratio between exploration and exploitation."
+- **Direct Connection to *Your* Project:**
+Provides baseline definition of exploration and exploitation
+
 ### [Paper 2 Short Title / Author Year]
 
 - **Full IEEE/APA Citation:**
