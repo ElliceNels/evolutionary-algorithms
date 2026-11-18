@@ -148,7 +148,7 @@ The report defines 25 continuous optimisation benchmark functions, including shi
 - **Limitations/Weaknesses Identified:**
 The benchmark functions are artificial mathematical problems, so good results on them may not transfer to practical applications. The suite was published in 2005 and focuses on particular dimensions and problem types. It provides guidance for running and reporting experiments, but gives limited guidance on statistical significance testing.
 - **Direct Connection to *Your* Project:**
-This report helps us choose benchmark functions with different properties and explain why we selected them. Its evaluation guidelines give us a basis for comparing adaptive and fixed mutation using the same search bounds, evaluation budgets and stopping rules. Repeated runs and measures of variation will help us account for randomness. Measuring both final error and the evaluations needed to reach a target will allow us to examine solution quality and convergence speed separately.
+This report helps us choose benchmark functions with different properties and explain why we selected them. Its evaluation guidelines give us a basis for comparing adaptive and fixed mutation using the same search bounds, evaluation budgets and stopping rules. Repeated runs and measures of variation will help us account for randomness. Measuring both final error and the evaluations needed to reach a target will allow us to examine solution quality and convergence speed separately. These benchmarks are all available in the Python library opfunu.
 
 ### [Paper 2 Short Title / Author Year]
 
