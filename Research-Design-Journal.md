@@ -200,6 +200,27 @@ The main algorithm combines several techniques, so improvements in its overall p
 - **Direct Connection to *Your* Project:**
 The benchmark descriptions help us explain why different functions test different search difficulties. The operator comparisons also support keeping the rest of our GA consistent when changing the mutation strategy, so we can better identify its effect. Measuring progress against function evaluations gives us a way to compare convergence speed while accounting for computational work. The mixed results across problems reinforce the need to test whether adaptive mutation’s benefits depend on the function being optimised.
 
+### Paper 14 — Average Convergence Rate / Chen & He (2021)
+
+- **Full IEEE/APA Citation:**
+Chen, Y., & He, J. (2021). Average convergence rate of evolutionary algorithms in continuous optimization. Information Sciences, 562, 200–219. https://doi.org/10.1016/j.ins.2020.12.076
+- **Why did you select this paper?**
+We selected this paper because it explains how convergence speed can be measured and investigates how adapting mutation affects convergence. It does a comparison of adaptive and fixed mutation step sizes.
+- **Key Findings & Methodology:**
+The authors study average convergence rate, which measures how quickly the error between the best solution found and the known optimum decreases over generations. They combine mathematical analysis with computer experiments. One experiment compares fixed and adaptive Gaussian mutation step sizes on the two-variable Sphere function. Each algorithm runs independently 1,000 times for 300 generations. The algorithm keeps one candidate, creates one mutated offspring and retains whichever is better. The adaptive version changes its mutation step size according to the current solution’s coordinates and converges faster than the fixed-step version in this experiment. The wider analysis shows that adaptation’s benefits depend on how it is designed and on the problem being solved. It also shows that increasing the number of variables can slow convergence considerably on difficult problems.
+- **Limitations/Weaknesses Identified:**
+The main mutation comparison uses a simple evolutionary programming algorithm with one parent and one offspring. Its behaviour may differ from a population-based GA that also uses crossover. The Sphere experiment uses a step-size rule suited to an optimum at zero, so its success may not transfer directly to other functions. The theoretical results depend on specific mathematical assumptions. The paper mainly investigates convergence speed and gives limited evidence about final solution quality under a common evaluation budget.
+- **Direct Connection to *Your* Project:**
+This paper gives us a way to explain and measure convergence speed and provides evidence that adapting mutation step size can improve progress in a continuous optimisation problem. It also helps us question whether those benefits hold across different functions and dimensions. Our experiments can investigate this within a GA while measuring both convergence speed and final solution quality. We should clearly distinguish changing mutation step size from changing mutation probability when discussing its relevance.
+
+### [Paper 2 Short Title / Author Year]
+
+- **Full IEEE/APA Citation:**
+- **Why did you select this paper?**
+- **Key Findings & Methodology:**
+- **Limitations/Weaknesses Identified:**
+- **Direct Connection to *Your* Project:**
+
 ### [Paper 2 Short Title / Author Year]
 
 - **Full IEEE/APA Citation:**
