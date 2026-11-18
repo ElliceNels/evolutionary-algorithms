@@ -67,6 +67,63 @@ The paper covers how mutations are done in GEs but doesn't provide additonal evi
 - **Direct Connection to *Your* Project:**
 This paper establishes the baseline definition of GE mutation needed for the project. 
 
+### Paper 4: Fixed vs Adaptive Mutations
+
+- **Full IEEE/APA Citation:**
+Eiben, A.E., Hinterding, R., and Michalewicz, Z. (1999) ‘Parameter control in evolutionary algorithms’, IEEE Transactions on Evolutionary Computation, 3(2), 124–141, available: https://doi.org/10.1109/4235.771166.
+- **Why did you select this paper?**
+The paper clearly explains parameter-control strategies in evolutionary algorithms and distinguishes between fixed, deterministic, adaptive and self-adaptive mutation control, making it a good comparison of mutation strategies
+- **Key Findings & Methodology:**
+Fixed mutation: the mutation parameters remains constant throughout the run.
+Deterministic mutation: the mutation parameters follows a preset schedule, such as decreasing as generations increase.
+Adaptive mutation: the mutation parameters changes in response to search feedback, such as stagnation or low population diversity.
+Self-adaptive mutation: each individual carries its own mutation parameters.
+- **Limitations/Weaknesses Identified:**
+The paper is a conceptual survey rather than an empirical study of mutation strategies. It does not directly compare the four mutation-control approaches on continuous optimisation benchmarks, so it should be used to establish definitions as apposed to provide evidence. 
+- **Direct Connection to *Your* Project:**
+This paper clearly explains all the independent variable that can be used in this research project. 
+
+### Paper 5: Fitness based adaptive mutation
+
+- **Full IEEE/APA Citation:**
+Marsili Libelli, S. and Alba, P. (2000) ‘Adaptive mutation in genetic algorithms’, Soft Computing, 4(2), 76–80, available: https://doi.org/10.1007/s005000000042.
+- **Why did you select this paper?**
+It proposes a clear fitness-based adaptive mutation mechanism and directly compares it with the common approach of assigning a constant mutation probability. Therefore, it is a strong example of an adaptive mutation strategy.
+- **Key Findings & Methodology:**
+The paper argues that a constant mutation probability gives every chromosome the same chance of mutation, regardless of fitness. Its proposed mechanism makes mutation depend on fitness, high-fitness chromosomes are less likely to be disrupted, while low-fitness chromosomes receive higher mutation probabilities to support exploration. The authors evaluate the approach using numerical examples.
+- **Limitations/Weaknesses Identified:**
+The paper also does not provide a broad modern benchmark comparison or detailed analysis of convergence speed.
+- **Direct Connection to *Your* Project:**
+This paper is useful as an example of an adaptive mutation.
+
+### Paper 6: Stagnation based adaptive mutation
+
+- **Full IEEE/APA Citation:**
+Kanwal, M.S., Ramesh, A.S., and Huang, L.A. (2013) ‘A novel pseudoderivative-based mutation operator for real-coded adaptive genetic algorithms’, F1000Research, 2, 139, available: https://doi.org/10.12688/f1000research.2-139.v2.
+- **Why did you select this paper?**
+Explains another adaptive mutation method and directly compares an adaptive mutation rate with fixed mutation rates. Therefore it is relevant to this project. 
+- **Key Findings & Methodology:**
+The paper proposes an adaptive mutation rate based on the derivative of fitness with respect to generations. When fitness remains unchanged across generations, the algorithm is considered to be stagnating at a local optimum, hence the mutation rate is then increased to add randomness and help the population escape. The study compares the adaptive GA against GAs using fixed mutation rates.
+- **Limitations/Weaknesses Identified:**
+The study is relatively small and uses a limited set of test problems, so its results may not generalise to all continuous optimisation problems.
+- **Direct Connection to *Your* Project:**
+This is one of the most directly relevant papers for the project because it tests adaptive mutation in a real-coded GA and reports better performance than fixed mutation rates.
+
+
+### Paper 7: Two-loop Real-coded genetic algorithm with Adaptive control of Mutation Step Sizes
+
+- **Full IEEE/APA Citation:**
+Herrera, F. and Lozano, M. (2000) ‘Two-Loop Real-Coded Genetic Algorithms with Adaptive Control of Mutation Step Sizes’, Applied Intelligence, 13(3), 187–204, available: https://doi.org/10.1023/A:1026531008287.
+- **Why did you select this paper?**
+This paper was selected because it focuses specifically on controlling mutation step size in real-coded genetic algorithms for continuous optimisation. It is relevant to the project because it demonstrates a different adaptive mutation method that doesn't focus on mutation rate. 
+- **Key Findings & Methodology:**
+The paper proposes TRAMSS, a two-loop real-coded genetic algorithm that adaptively controls mutation step sizes. In a real-coded GA, solutions are represented directly as real-valued variables and mutation changes these variables by adding a numerical perturbation. The mutation step size determines how large that perturbation is, a larger step size supports exploration, while a smaller step size supports local refinement near promising solutions.
+TRAMSS uses two loops with different mutation strengths. The inner loop applies smaller mutation steps to refine solutions within promising regions of the search space. The outer loop uses a restart mechanism with larger mutation steps to reinitialise the population and encourage exploration of different promising regions. The paper reports that this approach improves both reliability and accuracy compared with other mutation-step-size control methods.
+- **Limitations/Weaknesses Identified:**
+TRAMSS is more complex than a standard GA because it uses two loops.
+- **Direct Connection to *Your* Project:**
+This paper demonstrates another adaptive mutation method by showing that adaptive mutation in continuous optimisation can involve changing the mutation step size, not only the mutation probability. 
+
 ### Paper 1 — A Review on Genetic Algorithms / Katoch et al. (2021)
 
 - **Full IEEE/APA Citation:**
