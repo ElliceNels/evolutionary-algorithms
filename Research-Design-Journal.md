@@ -187,13 +187,18 @@ The proposed algorithm combines several methods, making it difficult to identify
 - **Direct Connection to *Your* Project:**
 - This paper gives us an example of evaluating convergence speed and solution quality across different benchmark problems. It supports using equal evaluation budgets, reporting success rates and measuring how many evaluations are needed to reach a target accuracy. It also shows why unsuccessful runs should be included when judging performance. Its experimental approach can help us design a fair comparison between adaptive and fixed mutation.
 
-### [Paper 2 Short Title / Author Year]
+### Paper 13: Evolutionary Programming for Continuous Optimisation / Yang et al. (2006)
 
 - **Full IEEE/APA Citation:**
+Yang, Y. W., Xu, J. F., & Soh, C. K. (2006). An evolutionary programming algorithm for continuous global optimization. European Journal of Operational Research, 168(2), 354–369. https://doi.org/10.1016/j.ejor.2004.05.007
 - **Why did you select this paper?**
+We selected this paper because it shows how benchmark functions can be used to assess convergence speed and solution quality. It also investigates the contribution of individual operators, making it useful for planning a controlled comparison in our project.
 - **Key Findings & Methodology:**
+The authors develop an evolutionary programming algorithm that combines large random mutations, local search and crossover. Large mutations explore the search space, while local search improves nearby solutions. They also use simulated annealing during selection to reduce the chance of getting stuck too early. The algorithm is tested on 12 benchmark problems, including Sphere, Rosenbrock and Rastrigin. The authors compare its results with earlier studies and then compare versions with different operators enabled. These operator experiments use 20 independent runs per problem and measure mean best fitness against the number of function evaluations, including evaluations spent on local search. The combined method performs well on many problems, but the results show that an operator’s usefulness depends on the problem’s characteristics. For example, local search improves performance on several problems but adds a cost that outweighs its benefits on some smaller problems.
 - **Limitations/Weaknesses Identified:**
+The main algorithm combines several techniques, so improvements in its overall performance cannot be attributed to mutation alone. Some comparisons use results reported in earlier papers, and the authors acknowledge estimating some values from published graphs. Although they discuss statistically significant differences, the statistical procedures receive limited explanation. The paper also provides no direct comparison of adaptive and fixed mutation within a GA.
 - **Direct Connection to *Your* Project:**
+The benchmark descriptions help us explain why different functions test different search difficulties. The operator comparisons also support keeping the rest of our GA consistent when changing the mutation strategy, so we can better identify its effect. Measuring progress against function evaluations gives us a way to compare convergence speed while accounting for computational work. The mixed results across problems reinforce the need to test whether adaptive mutation’s benefits depend on the function being optimised.
 
 ### [Paper 2 Short Title / Author Year]
 
