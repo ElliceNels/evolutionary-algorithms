@@ -198,7 +198,7 @@ The authors develop an evolutionary programming algorithm that combines large ra
 - **Limitations/Weaknesses Identified:**
 The main algorithm combines several techniques, so improvements in its overall performance cannot be attributed to mutation alone. Some comparisons use results reported in earlier papers, and the authors acknowledge estimating some values from published graphs. Although they discuss statistically significant differences, the statistical procedures receive limited explanation. The paper also provides no direct comparison of adaptive and fixed mutation within a GA.
 - **Direct Connection to *Your* Project:**
-The benchmark descriptions help us explain why different functions test different search difficulties. The operator comparisons also support keeping the rest of our GA consistent when changing the mutation strategy, so we can better identify its effect. Measuring progress against function evaluations gives us a way to compare convergence speed while accounting for computational work. The mixed results across problems reinforce the need to test whether adaptive mutation’s benefits depend on the function being optimised.
+The benchmark descriptions help us explain why different functions test different search difficulties. The operator comparisons also support keeping the rest of our GA consistent when changing the mutation strategy, so we can better identify its effect. Measuring progress against function evaluations gives us a way to compare convergence speed while accounting for computational work. The mixed results across problems reinforce the need to test whether adaptive mutation’s benefits depend on the function being optimised. It helps justify investigating when adaptive mutation improves performance, while my GA experiments will test whether those benefits hold in the chosen setup.
 
 ### Paper 14 — Average Convergence Rate / Chen & He (2021)
 
@@ -213,13 +213,18 @@ The main mutation comparison uses a simple evolutionary programming algorithm wi
 - **Direct Connection to *Your* Project:**
 This paper gives us a way to explain and measure convergence speed and provides evidence that adapting mutation step size can improve progress in a continuous optimisation problem. It also helps us question whether those benefits hold across different functions and dimensions. Our experiments can investigate this within a GA while measuring both convergence speed and final solution quality. We should clearly distinguish changing mutation step size from changing mutation probability when discussing its relevance.
 
-### [Paper 2 Short Title / Author Year]
+### Paper 15: Quantum-Adaptive Mutation / Deng et al. (2024)
 
 - **Full IEEE/APA Citation:**
+Deng, W., Wang, J., Guo, A., & Zhao, H. (2024). Quantum differential evolutionary algorithm with quantum-adaptive mutation strategy and population state evaluation framework for high-dimensional problems. Information Sciences, 676, 120787. https://doi.org/10.1016/j.ins.2024.120787
 - **Why did you select this paper?**
+It investigates how changing mutation strength affects convergence and solution quality in continuous optimisation. It also tests problems with large numbers of variables, helping us consider whether the effects change as problems become larger.
 - **Key Findings & Methodology:**
+The authors develop a quantum-inspired differential evolution algorithm with two main additions. The first gradually reduces mutation strength as the run progresses. The second monitors fitness improvement and population distribution, then intervenes when the search is struggling. They test 20 benchmark functions, with their main comparisons using 500, 1,000 and 3,000 variables and 25 independent runs per problem. They report best and average solution values, standard deviations and convergence graphs. Additional experiments compare different mutation-strength rules, including a fixed setting, both with and without the monitoring framework. Their proposed method generally performs well against the comparison algorithms, although its advantage varies across functions.
 - **Limitations/Weaknesses Identified:**
+The experiments use quantum-inspired differential evolution, so the findings may not transfer directly to GAs. Although the authors call their mutation strategy adaptive, its strength follows a formula based on the generation number. The separate monitoring framework responds to what happens during the search. This distinction matters when deciding what counts as adaptive mutation in our project. The authors also acknowledge that the method can take considerable computing time despite converging in fewer iterations, showing that fewer iterations do not automatically mean a faster execution time.
 - **Direct Connection to *Your* Project:**
+- This paper provides supporting evidence that changing mutation strength can affect convergence and solution quality. Its experiments that test the mutation rule separately from the monitoring framework also help show how individual changes can be evaluated. It encourages us to define our adaptive strategy clearly and distinguish a preset schedule from a rule that responds to progress or diversity. It also supports measuring computational effort alongside convergence, so we can judge whether any improvement justifies the extra work involved.
 
 ### [Paper 2 Short Title / Author Year]
 
