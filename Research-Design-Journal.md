@@ -137,7 +137,7 @@ The paper covers a wide range of GA methods and applications, so some topics are
 - **Direct Connection to *Your* Project:**
 This paper supports the background section of our project by explaining how GAs work, how numerical solutions are represented, and how selection, crossover and mutation are used in continuous optimisation. Its discussion of premature convergence and the difficulty of choosing mutation settings helps explain why we are comparing adaptive and fixed mutation. It gives us a basis for understanding how these choices could affect convergence speed and solution quality.
 
-### Paper 2 — CEC 2005 Benchmark Functions / Suganthan et al. (2005)
+### Paper 9 — CEC 2005 Benchmark Functions / Suganthan et al. (2005)
 
 - **Full IEEE/APA Citation:**
 Suganthan, P. N., Hansen, N., Liang, J. J., Deb, K., Chen, Y.-P., Auger, A., & Tiwari, S. (2005). Problem definitions and evaluation criteria for the CEC 2005 special session on real-parameter optimization (Technical Report; KanGAL Report No. 2005005). Nanyang Technological University.
