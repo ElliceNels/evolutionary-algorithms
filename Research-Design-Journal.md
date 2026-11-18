@@ -174,6 +174,27 @@ the neighborhood of previously visited points. In order to be successful, a sear
 - **Direct Connection to *Your* Project:**
 Provides baseline definition of exploration and exploitation
 
+### Paper 12: Quantum-Inspired Evolutionary Algorithm / Talbi & Draa (2017)
+
+- **Full IEEE/APA Citation:**
+Talbi, H., & Draa, A. (2017). A new real-coded quantum-inspired evolutionary algorithm for continuous optimization. Applied Soft Computing, 61, 765–791. https://doi.org/10.1016/j.asoc.2017.07.046
+- **Why did you select this paper?**
+We selected this paper as an example of how researchers test continuous optimisation algorithms. It shows how benchmark functions, evaluation budgets, target accuracy and statistical tests can be used to compare performance.
+- **Key Findings & Methodology:**
+The authors combine quantum-inspired evolutionary search with local search and gradually narrow the search region around promising solutions. They test three versions using different local-search methods and select the trust-region version for comparison with 14 other algorithms. They use the Black-Box Optimization Benchmarking (BBOB) collection through the COmparing Continuous Optimisers (COCO) platform, testing 24 functions with 2, 3, 5, 10 and 20 variables and 15 instances of each function at each dimension. Each run receives a maximum of 10,000 function evaluations per variable. Performance is measured using the evaluations needed to reach target solution values, success rates and expected running time, which accounts for unsuccessful runs. The authors also use rank-sum significance tests and corrections for multiple comparisons. Their method performs competitively overall, although its results depend on the function and dimension.
+- **Limitations/Weaknesses Identified:**
+The proposed algorithm combines several methods, making it difficult to identify which component is responsible for improvements. It also has many parameters, and the authors acknowledge that suitable settings can differ between function categories. Testing focuses on mathematical benchmarks, with noisy functions and practical applications left for future work. The experiments provide limited direct evidence about adaptive versus fixed mutation in GAs.
+- **Direct Connection to *Your* Project:**
+- This paper gives us an example of evaluating convergence speed and solution quality across different benchmark problems. It supports using equal evaluation budgets, reporting success rates and measuring how many evaluations are needed to reach a target accuracy. It also shows why unsuccessful runs should be included when judging performance. Its experimental approach can help us design a fair comparison between adaptive and fixed mutation.
+
+### [Paper 2 Short Title / Author Year]
+
+- **Full IEEE/APA Citation:**
+- **Why did you select this paper?**
+- **Key Findings & Methodology:**
+- **Limitations/Weaknesses Identified:**
+- **Direct Connection to *Your* Project:**
+
 ### [Paper 2 Short Title / Author Year]
 
 - **Full IEEE/APA Citation:**
