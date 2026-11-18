@@ -226,6 +226,19 @@ The experiments use quantum-inspired differential evolution, so the findings may
 - **Direct Connection to *Your* Project:**
 - This paper provides supporting evidence that changing mutation strength can affect convergence and solution quality. Its experiments that test the mutation rule separately from the monitoring framework also help show how individual changes can be evaluated. It encourages us to define our adaptive strategy clearly and distinguish a preset schedule from a rule that responds to progress or diversity. It also supports measuring computational effort alongside convergence, so we can judge whether any improvement justifies the extra work involved.
 
+### Paper 16: Pseudoderivative-Based Adaptive Mutation / Kanwal et al. (2013)
+
+- **Full IEEE/APA Citation:**
+Kanwal, M. S., Ramesh, A. S., & Huang, L. A. (2013). A novel pseudoderivative-based mutation operator for real-coded adaptive genetic algorithms (Version 2). F1000Research, 2, 139. https://doi.org/10.12688/f1000research.2-139.v2
+- **Why did you select this paper?**
+Because it directly compares adaptive and fixed mutation rates in a GA. It examines both how often the algorithm finds the optimum and how many generations it takes, making it closely related to our research question.
+- **Key Findings & Methodology:**
+The authors introduce a mutation rate that increases when the best fitness value stops improving. The longer the search remains stuck, the greater the chance of mutation, helping it explore other solutions. They compare this approach with fixed mutation rates of 0% and 20% on the eight-queens problem and a continuous surface maximisation problem. On eight-queens, adaptive mutation achieves a 95.5% success rate compared with 53.5% for 20% fixed mutation, and a lower average generation count. However, on the continuous surface, both approaches achieve 100% success and show no statistically significant difference in convergence speed. A separate experiment tests the adaptive GA on Rastrigin against random search, hill climbing and Nelder–Mead, reporting greater success in finding the global minimum.
+- **Limitations/Weaknesses Identified:**
+The strongest improvement over fixed mutation occurs on eight-queens, which is a discrete problem. The continuous experiments use only two decision variables, limiting what they tell us about larger problems. Only two fixed rates are tested, and 0% provides no mutation at all, leaving many possible fixed settings unexplored. The Rastrigin experiment compares the adaptive GA with other search methods, so it cannot establish the effect of adapting mutation alone.
+- **Direct Connection to *Your* Project:**
+This paper gives us a clear example of adapting mutation probability in response to stalled progress. Its mixed results show why we need to test both convergence speed and solution quality across several continuous functions. It also motivates comparing adaptation against several reasonable fixed rates. Our project can investigate whether the benefits hold across different landscapes and numbers of variables while keeping the rest of the GA consistent.
+
 ### [Paper 2 Short Title / Author Year]
 
 - **Full IEEE/APA Citation:**
