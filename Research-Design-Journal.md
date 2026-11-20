@@ -2,7 +2,7 @@
 
 - **Student Names:** Ellice Nelson, Dawid Jakubowski
 - **Student ID:** 23371323, 23384549
-- **Proposed Research Title:** Examining the effects of dynamic versus static mutation in genetic algorithms on convergence speed and solution quality 
+- **Proposed Research Title:** Examining the effects of adaptive versus fixed mutation in genetic algorithms on convergence speed and solution quality 
 - **GitHub Repository Link:** https://github.com/ElliceNels/evolutionary-algorithms
 
 ------------------------------------------------------------------------
@@ -263,14 +263,45 @@ In line with academic integrity policies, any use of digital tools (AI search en
 
 ## 4. Weekly Activity & Reflection Logs
 
-### Week 01: Focus Area - Topic Selection and Literature Review
+### Week 01: Focus Area - Genetic Algorithms
 
 - **Activities Completed:**
+Learned about Genetic Algorithms in class and implemented our own GA
 - **Key Insights / Discoveries:**
 - **Obstacles Encountered & How You Overcame Them:**
 - **Plan for Next Week:**
+Learn about Genetic Programs
 
-### Week 02: Focus Area - [e.g., Refining the Research Question]
+### Week 02: Focus Area - Genetic Programs
+
+- **Activities Completed:**
+Learned about Genetic Programs in class and modified oour existing GA to a GP
+- **Key Insights / Discoveries:**
+- **Obstacles Encountered & How You Overcame Them:**
+- **Plan for Next Week:**
+Learn about Gramatical Evolutions
+
+### Week 03: Focus Area - Gramatical Evolutions
+
+- **Activities Completed:**
+Learned about Gramatical Evolutions
+- **Key Insights / Discoveries:**
+- **Obstacles Encountered & How You Overcame Them:**
+- **Plan for Next Week:**
+Work on project
+
+### Week 04: Focus Area - Topic Selection and Literature Review
+
+- **Activities Completed:**
+Selected adaptive mutation in genetic algorithms as our research topic and began reviewing academic papers on mutation strategies, GAs, benchmarks, etc.
+- **Key Insights / Discoveries:**
+Identified the differences between fixed and adaptive mutation and the importance of balancing exploration and exploitation to avoid premature convergence. Identified relevant papers related to benchmarks, existing research. Also established some design decisions 
+- **Obstacles Encountered & How You Overcame Them:**
+Initially struggled to select a topic that would be relevant but also feasible within the timeframe we have, however an initial literature review helped us established a clear scope and research topic. 
+- **Plan for Next Week:**
+Work on presentation
+
+### Week 05: Focus Area - Presentation 
 
 - **Activities Completed:**
 - **Key Insights / Discoveries:**
