@@ -24,7 +24,8 @@ def main():
         config.number_of_offspring,
         config.population_size,
         config.crossover_signal,
-        config.chromosome_length
+        config.chromosome_length,
+        mutation_step=config.mutation_step,
     )
 
     print("Initial population:")

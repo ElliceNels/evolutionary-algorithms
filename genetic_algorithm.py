@@ -4,16 +4,25 @@ import random
 Chromosome = tuple[float, ...]
 LOWER_BOUND = -1.0
 UPPER_BOUND = 1.0
-MUTATION_STEP = 0.1
 
 class GeneticAlgorithm:
     """
     A class to represent a genetic algorithm.
     """
 
-    def __init__(self, crossover_rate, mutation_rate, number_of_offspring, population_size, crossover_signal, chromosome_length):
+    def __init__(
+        self,
+        crossover_rate: float,
+        mutation_rate: float,
+        number_of_offspring: int,
+        population_size: int,
+        crossover_signal: int,
+        chromosome_length: int,
+        mutation_step: float,
+    ):
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
+        self.mutation_step = mutation_step
         self.number_of_offspring = number_of_offspring
         self.population_size = population_size
         self.crossover_signal = crossover_signal
@@ -82,7 +91,7 @@ class GeneticAlgorithm:
 
         for gene in individual:
             if random.random() < self.mutation_rate:
-                gene += random.uniform(-MUTATION_STEP, MUTATION_STEP)
+                gene += random.uniform(-self.mutation_step, self.mutation_step)
                 gene = min(UPPER_BOUND, max(LOWER_BOUND, gene))
             mutated_individual.append(gene)
 
