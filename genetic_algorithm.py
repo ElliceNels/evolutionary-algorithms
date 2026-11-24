@@ -1,5 +1,6 @@
 import json
 import random
+from collections.abc import Callable
 from pathlib import Path
 
 
@@ -25,6 +26,7 @@ class GeneticAlgorithm:
         target_error: float = 0.0,
         lower_bound: float = -1.0,
         upper_bound: float = 1.0,
+        objective: Callable[[Chromosome], float] | None = None,
     ):
         if evaluation_budget < population_size:
             raise ValueError("evaluation_budget must cover the initial population")
@@ -41,6 +43,7 @@ class GeneticAlgorithm:
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.evaluation_budget = evaluation_budget
+        self.objective = objective if objective is not None else self._default_sphere_fitness
         self.evaluations = 0
         self.report: dict | None = None
         self.best_chromosome: Chromosome = ()
@@ -107,6 +110,11 @@ class GeneticAlgorithm:
         return tuple(mutated_individual)
 
     def _check_fitness(self, individual: Chromosome) -> float:
+        """Evaluate the individual using the configured objective."""
+        return float(self.objective(individual))
+
+    @staticmethod
+    def _default_sphere_fitness(individual: Chromosome) -> float:
         """Calculate the sum of squared genes, with a minimum at zero."""
         return sum(gene ** 2 for gene in individual)
 
