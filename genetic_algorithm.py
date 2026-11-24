@@ -2,8 +2,6 @@ import random
 
 
 Chromosome = tuple[float, ...]
-LOWER_BOUND = -1.0
-UPPER_BOUND = 1.0
 
 class GeneticAlgorithm:
     """
@@ -19,7 +17,15 @@ class GeneticAlgorithm:
         crossover_signal: int,
         chromosome_length: int,
         mutation_step: float,
+        seed: int | None = None,
+        optimum_fitness: float = 0.0,
+        target_error: float = 0.0,
+        lower_bound: float = -1.0,
+        upper_bound: float = 1.0,
+        evaluation_budget: int | None = None,
     ):
+        if evaluation_budget is not None and evaluation_budget < population_size:
+            raise ValueError("evaluation_budget must cover the initial population")
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
         self.mutation_step = mutation_step
@@ -27,25 +33,22 @@ class GeneticAlgorithm:
         self.population_size = population_size
         self.crossover_signal = crossover_signal
         self.chromosome_length = chromosome_length
+        self.rng = random.Random(seed)
+        self.optimum_fitness = optimum_fitness
+        self.target_error = target_error
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+        self.evaluation_budget = evaluation_budget
+        self.evaluations = 0
         self.current_population = []
         self._initialise_population()
+        self._fitness = self._evaluate_population(self.current_population)
 
-    def _initialise_population(self, seed=None):
-        """
-        Initialise the population with random individuals.
-
-        Args:
-            seed (int, optional): The seed for the random number generator. Defaults to None.
-        """
-
-        if seed is not None:
-            random.seed(seed)
-
-        self.current_population = []
-
+    def _initialise_population(self):
+        """Initialise the population with random individuals."""
         for _ in range(self.population_size):
             chromosome = tuple(
-                random.uniform(LOWER_BOUND, UPPER_BOUND)
+                self.rng.uniform(self.lower_bound, self.upper_bound)
                 for _ in range(self.chromosome_length)
             )
             self.current_population.append(chromosome)
@@ -53,9 +56,9 @@ class GeneticAlgorithm:
     def _select_parent(self, population):
         """Select a parent from the population using tournament selection."""
 
-        individual1, individual2 = random.sample(population, 2)
+        individual1, individual2 = self.rng.sample(population, 2)
 
-        if self._check_fitness(individual1) <= self._check_fitness(individual2):
+        if self._fitness[individual1] <= self._fitness[individual2]:
             return individual1
 
         return individual2
@@ -72,7 +75,7 @@ class GeneticAlgorithm:
         """
 
         # Decide whether crossover occurs
-        if random.random() >= self.crossover_rate:
+        if self.rng.random() >= self.crossover_rate:
             # The parent tuples are immutable.
             return [individual1, individual2]
 
@@ -90,9 +93,9 @@ class GeneticAlgorithm:
         mutated_individual = []
 
         for gene in individual:
-            if random.random() < self.mutation_rate:
-                gene += random.uniform(-self.mutation_step, self.mutation_step)
-                gene = min(UPPER_BOUND, max(LOWER_BOUND, gene))
+            if self.rng.random() < self.mutation_rate:
+                gene += self.rng.uniform(-self.mutation_step, self.mutation_step)
+                gene = min(self.upper_bound, max(self.lower_bound, gene))
             mutated_individual.append(gene)
 
         return tuple(mutated_individual)
@@ -101,11 +104,19 @@ class GeneticAlgorithm:
         """Calculate the sum of squared genes, with a minimum at zero."""
         return sum(gene ** 2 for gene in individual)
 
-    def _generate_new_population(self, population):
+    def _evaluate_population(self, population):
+        scores = {}
+        for individual in population:
+            scores[individual] = self._check_fitness(individual)
+            self.evaluations += 1
+        return scores
+
+    def _generate_new_population(self, population, offspring_count):
         """Perform selection, crossover, and mutation to generate a new population.
 
         Args:
             population (list[Chromosome]): The current population of individuals.
+            offspring_count (int): The number of offspring to generate.
 
         Returns:
             list[Chromosome]: The new population of individuals after selection, crossover, and mutation.
@@ -113,7 +124,7 @@ class GeneticAlgorithm:
 
         working_population = []
 
-        while len(working_population) < self.population_size:
+        while len(working_population) < offspring_count:
             # Select two parents
             parent1 = self._select_parent(population)
             parent2 = self._select_parent(population)
@@ -130,7 +141,7 @@ class GeneticAlgorithm:
                 working_population.append(mutated_offspring)
 
                 # Stop if population is full
-                if len(working_population) >= self.population_size:
+                if len(working_population) >= offspring_count:
                     break
 
         return working_population
@@ -153,14 +164,23 @@ class GeneticAlgorithm:
 
             print(f"Generation {generation}: Best fitness this generation = {best_fitness:.4f}")
 
-            # Stop if optimal solution found
-            if best_fitness == 0.0:
-                print("Optimal solution found!")
+            if best_fitness - self.optimum_fitness <= self.target_error:
+                print("Target error reached!")
                 break
 
-            self.current_population = self._generate_new_population(
-                self.current_population
-            )
+            offspring_count = self.population_size
+            if self.evaluation_budget is not None:
+                offspring_count = min(offspring_count, self.evaluation_budget - self.evaluations)
+            if offspring_count == 0:
+                break
+
+            offspring = self._generate_new_population(self.current_population, offspring_count)
+            scores = self._evaluate_population(offspring)
+            # Keep the remaining parents when the budget allows only a partial generation.
+            remaining = self.current_population[offspring_count:]
+            self.current_population = offspring + remaining
+            self._fitness = {individual: self._fitness[individual] for individual in remaining}
+            self._fitness.update(scores)
 
         return self.get_best_individuals()
 
@@ -171,17 +191,11 @@ class GeneticAlgorithm:
         """Get the best individuals from the population."""
 
         if population is None:
-            population = self.current_population
+            scores = self._fitness
+        else:
+            scores = {
+                individual: self._fitness[individual] for individual in population
+            }
 
-        best_fitness = min(
-            self._check_fitness(individual)
-            for individual in population
-        )
-
-        best_individuals = {}
-
-        for individual in population:
-            if self._check_fitness(individual) == best_fitness:
-                best_individuals[individual] = best_fitness
-
-        return best_individuals
+        best_fitness = min(scores.values())
+        return {individual: score for individual, score in scores.items() if score == best_fitness}

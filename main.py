@@ -26,6 +26,12 @@ def main():
         config.crossover_signal,
         config.chromosome_length,
         mutation_step=config.mutation_step,
+        seed=config.seed,
+        optimum_fitness=config.optimum_fitness,
+        target_error=config.target_error,
+        lower_bound=config.lower_bound,
+        upper_bound=config.upper_bound,
+        evaluation_budget=config.evaluation_budget,
     )
 
     print("Initial population:")
