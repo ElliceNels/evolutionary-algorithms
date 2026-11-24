@@ -17,14 +17,14 @@ class GeneticAlgorithm:
         crossover_signal: int,
         chromosome_length: int,
         mutation_step: float,
+        evaluation_budget: int,
         seed: int | None = None,
         optimum_fitness: float = 0.0,
         target_error: float = 0.0,
         lower_bound: float = -1.0,
         upper_bound: float = 1.0,
-        evaluation_budget: int | None = None,
     ):
-        if evaluation_budget is not None and evaluation_budget < population_size:
+        if evaluation_budget < population_size:
             raise ValueError("evaluation_budget must cover the initial population")
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
@@ -40,6 +40,9 @@ class GeneticAlgorithm:
         self.upper_bound = upper_bound
         self.evaluation_budget = evaluation_budget
         self.evaluations = 0
+        self.best_chromosome: Chromosome = ()
+        self.best_fitness = float("inf")
+        self.first_target_evaluation: int | None = None
         self.current_population = []
         self._initialise_population()
         self._fitness = self._evaluate_population(self.current_population)
@@ -104,11 +107,24 @@ class GeneticAlgorithm:
         """Calculate the sum of squared genes, with a minimum at zero."""
         return sum(gene ** 2 for gene in individual)
 
+    def get_error(self, fitness: float) -> float:
+        """Return the difference between a fitness score and the known optimum."""
+        return fitness - self.optimum_fitness
+
     def _evaluate_population(self, population):
         scores = {}
         for individual in population:
-            scores[individual] = self._check_fitness(individual)
+            fitness = self._check_fitness(individual)
             self.evaluations += 1
+            scores[individual] = fitness
+            if fitness < self.best_fitness:
+                self.best_chromosome = individual
+                self.best_fitness = fitness
+            if (
+                self.first_target_evaluation is None
+                and self.get_error(fitness) <= self.target_error
+            ):
+                self.first_target_evaluation = self.evaluations
         return scores
 
     def _generate_new_population(self, population, offspring_count):
@@ -146,34 +162,22 @@ class GeneticAlgorithm:
 
         return working_population
 
-    def run_evolution(self, iterations):
-        """Run the evolution process for a specified number of iterations.
+    def run_evolution(self) -> dict[Chromosome, float]:
+        """Use the full evaluation budget and return the best solution seen."""
+        generation = 0
+        while True:
+            generation_best = min(self._fitness.values())
+            generation_error = self.get_error(generation_best)
+            print(
+                f"Generation {generation}: Best fitness this generation = {generation_best:.4e}, "
+                f"error = {generation_error:.4e}"
+            )
 
-        Args:
-            iterations (int): The number of iterations to run the evolution process.
-
-        Returns:
-            dict[Chromosome, float]: A dictionary containing the best individuals and their fitness scores.
-        """
-
-        for generation in range(iterations):
-
-            # Get the best individuals from the current population
-            best_individuals = self.get_best_individuals()
-            best_fitness = min(best_individuals.values())
-
-            print(f"Generation {generation}: Best fitness this generation = {best_fitness:.4f}")
-
-            if best_fitness - self.optimum_fitness <= self.target_error:
-                print("Target error reached!")
+            remaining_budget = self.evaluation_budget - self.evaluations
+            if remaining_budget == 0:
                 break
 
-            offspring_count = self.population_size
-            if self.evaluation_budget is not None:
-                offspring_count = min(offspring_count, self.evaluation_budget - self.evaluations)
-            if offspring_count == 0:
-                break
-
+            offspring_count = min(self.population_size, remaining_budget)
             offspring = self._generate_new_population(self.current_population, offspring_count)
             scores = self._evaluate_population(offspring)
             # Keep the remaining parents when the budget allows only a partial generation.
@@ -181,8 +185,9 @@ class GeneticAlgorithm:
             self.current_population = offspring + remaining
             self._fitness = {individual: self._fitness[individual] for individual in remaining}
             self._fitness.update(scores)
+            generation += 1
 
-        return self.get_best_individuals()
+        return {self.best_chromosome: self.best_fitness}
 
     def get_population(self):
         return self.current_population

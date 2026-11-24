@@ -39,12 +39,18 @@ def main():
         print(format_chromosome(chromosome))
     print()
 
-    best_individuals = ga.run_evolution(config.iterations)
+    best_individuals = ga.run_evolution()
     print()
 
-    print("Best in final population:")
+    print("Best across all evaluations:")
     for chromosome, fitness in best_individuals.items():
-        print(f"{format_chromosome(chromosome)}  fitness = {fitness:.4f}")
+        print(f"{format_chromosome(chromosome)}  fitness = {fitness:.4e}, error = {ga.get_error(fitness):.4e}")
+
+    print(f"Objective evaluations: {ga.evaluations}")
+    if ga.first_target_evaluation is None:
+        print("Target error was not reached.")
+    else:
+        print(f"Target error first reached at evaluation {ga.first_target_evaluation}.")
     print()
 
     print("Final population:")

@@ -14,13 +14,15 @@ class Config(BaseModel):
     number_of_offspring: int = Field(gt=0)
     chromosome_length: int = Field(gt=0)
     crossover_signal: int = Field(gt=0)
-    iterations: int = Field(gt=0)
     seed: int
     optimum_fitness: float = Field(default=0.0, allow_inf_nan=False)
     target_error: float = Field(ge=0.0, allow_inf_nan=False)
     lower_bound: float = Field(allow_inf_nan=False)
     upper_bound: float = Field(allow_inf_nan=False)
-    evaluation_budget: int = Field(gt=0)
+    evaluation_budget: int = Field(
+        default_factory=lambda data: 10_000 * data["chromosome_length"],
+        gt=0,
+    )
 
     @model_validator(mode="after")
     def validate_ga_settings(self) -> "Config":
