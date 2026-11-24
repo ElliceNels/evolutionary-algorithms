@@ -2,6 +2,7 @@ import json
 import random
 from collections.abc import Callable
 from pathlib import Path
+from statistics import fmean, pstdev
 
 
 Chromosome = tuple[float, ...]
@@ -183,11 +184,15 @@ class GeneticAlgorithm:
         generations = []
         generation = 0
         while True:
-            generation_best = min(self._fitness.values())
+            # Look up the fitness PER individual (duplicates must be counted to keep stats correct).
+            fitness_scores = [self._fitness[individual] for individual in self.current_population]
+            generation_best = min(fitness_scores)
             generations.append({
                 "generation": generation,
                 "evaluations": self.evaluations,
                 "best_fitness": generation_best,
+                "mean_fitness": fmean(fitness_scores),
+                "fitness_std_dev": pstdev(fitness_scores),
                 "error": self.get_error(generation_best),
                 "best_so_far_fitness": self.best_fitness,
                 "best_so_far_error": self.get_error(self.best_fitness),
@@ -238,10 +243,15 @@ class GeneticAlgorithm:
         lines.extend(self._format_chromosome(chromosome) for chromosome in report["initial_population"])
         lines.append("")
         for generation in report["generations"]:
+            mean = generation.get("mean_fitness")
+            std_dev = generation.get("fitness_std_dev")
+            mean_text = "N/A" if mean is None else f"{mean:.4e}"
+            std_dev_text = "N/A" if std_dev is None else f"{std_dev:.4e}"
             lines.append(
                 f"Generation {generation['generation']}: "
                 f"Best fitness this generation = {generation['best_fitness']:.4e}, "
-                f"error = {generation['error']:.4e}"
+                f"error = {generation['error']:.4e}, "
+                f"mean fitness = {mean_text}, fitness std dev = {std_dev_text}"
             )
 
         lines.extend(["", "Best across all evaluations:"])
