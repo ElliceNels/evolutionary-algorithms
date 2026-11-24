@@ -1,5 +1,11 @@
 import random
 
+
+Chromosome = tuple[float, ...]
+LOWER_BOUND = -1.0
+UPPER_BOUND = 1.0
+MUTATION_STEP = 0.1
+
 class GeneticAlgorithm:
     """
     A class to represent a genetic algorithm.
@@ -29,12 +35,10 @@ class GeneticAlgorithm:
         self.current_population = []
 
         for _ in range(self.population_size):
-            chromosome = ""
-
-            for _ in range(self.chromosome_length):
-                bit = random.choice(["0", "1"])
-                chromosome += bit
-
+            chromosome = tuple(
+                random.uniform(LOWER_BOUND, UPPER_BOUND)
+                for _ in range(self.chromosome_length)
+            )
             self.current_population.append(chromosome)
 
     def _select_parent(self, population):
@@ -42,25 +46,25 @@ class GeneticAlgorithm:
 
         individual1, individual2 = random.sample(population, 2)
 
-        if self._check_fitness(individual1) >= self._check_fitness(individual2):
+        if self._check_fitness(individual1) <= self._check_fitness(individual2):
             return individual1
 
         return individual2
 
-    def _apply_crossover(self, individual1, individual2) -> list[str]:
+    def _apply_crossover(self, individual1: Chromosome, individual2: Chromosome) -> list[Chromosome]:
         """Apply crossover or reproduction to two individuals to produce offspring.
 
         Args:
-            individual1 (str): The first individual.
-            individual2 (str): The second individual.
+            individual1 (Chromosome): The first individual.
+            individual2 (Chromosome): The second individual.
 
         Returns:
-            list[str]: A list of the offspring produced by crossover or reproduction.
+            list[Chromosome]: A list of the offspring produced by crossover or reproduction.
         """
 
         # Decide whether crossover occurs
         if random.random() >= self.crossover_rate:
-            # Reproduction: return copies of the parents
+            # The parent tuples are immutable.
             return [individual1, individual2]
 
         # Use the configured crossover point
@@ -72,43 +76,30 @@ class GeneticAlgorithm:
 
         return [offspring1, offspring2]
 
-    def _apply_mutation(self, individual) -> str:
-        """Apply mutation to an individual by flipping bits with a certain probability.
+    def _apply_mutation(self, individual: Chromosome) -> Chromosome:
+        """Perturb each selected gene by a bounded uniform offset."""
+        mutated_individual = []
 
-        Args:
-            individual (str): The individual to mutate.
-
-        Returns:
-            str: The mutated individual.
-        """
-
-        mutated_individual = ""
-
-        for bit in individual:
+        for gene in individual:
             if random.random() < self.mutation_rate:
-                if bit == "0":
-                    mutated_individual += "1"
-                else:
-                    mutated_individual += "0"
-            else:
-                mutated_individual += bit
+                gene += random.uniform(-MUTATION_STEP, MUTATION_STEP)
+                gene = min(UPPER_BOUND, max(LOWER_BOUND, gene))
+            mutated_individual.append(gene)
 
-        return mutated_individual
+        return tuple(mutated_individual)
 
-    def _check_fitness(self, individual) -> int:
-        """Calculate the fitness score of an individual."""
-
-        fitness_score = individual.count("0")
-        return fitness_score
+    def _check_fitness(self, individual: Chromosome) -> float:
+        """Calculate the sum of squared genes, with a minimum at zero."""
+        return sum(gene ** 2 for gene in individual)
 
     def _generate_new_population(self, population):
         """Perform selection, crossover, and mutation to generate a new population.
 
         Args:
-            population (list[str]): The current population of individuals.
+            population (list[Chromosome]): The current population of individuals.
 
         Returns:
-            list[str]: The new population of individuals after selection, crossover, and mutation.
+            list[Chromosome]: The new population of individuals after selection, crossover, and mutation.
         """
 
         working_population = []
@@ -142,19 +133,19 @@ class GeneticAlgorithm:
             iterations (int): The number of iterations to run the evolution process.
 
         Returns:
-            dict[str, int]: A dictionary containing the best individuals and their fitness scores.
+            dict[Chromosome, float]: A dictionary containing the best individuals and their fitness scores.
         """
 
         for generation in range(iterations):
 
             # Get the best individuals from the current population
             best_individuals = self.get_best_individuals()
-            best_fitness = max(best_individuals.values())
+            best_fitness = min(best_individuals.values())
 
-            print(f"Generation {generation}: Best fitness = {best_fitness}")
+            print(f"Generation {generation}: Best fitness this generation = {best_fitness:.4f}")
 
             # Stop if optimal solution found
-            if best_fitness == self.chromosome_length:
+            if best_fitness == 0.0:
                 print("Optimal solution found!")
                 break
 
@@ -167,13 +158,13 @@ class GeneticAlgorithm:
     def get_population(self):
         return self.current_population
 
-    def get_best_individuals(self, population=None) -> dict[str, int]:
+    def get_best_individuals(self, population=None) -> dict[Chromosome, float]:
         """Get the best individuals from the population."""
 
         if population is None:
             population = self.current_population
 
-        best_fitness = max(
+        best_fitness = min(
             self._check_fitness(individual)
             for individual in population
         )

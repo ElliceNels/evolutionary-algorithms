@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from genetic_algorithm import GeneticAlgorithm
+from genetic_algorithm import Chromosome, GeneticAlgorithm
 from config import Config
 
 def load_config(file_path: str | Path) -> Config:
@@ -10,6 +10,9 @@ def load_config(file_path: str | Path) -> Config:
 
     return Config(**config_data)
 
+
+def format_chromosome(chromosome: Chromosome) -> str:
+    return "(" + ", ".join(f"{gene:.4f}" for gene in chromosome) + ")"
 
 
 def main():
@@ -24,9 +27,22 @@ def main():
         config.chromosome_length
     )
 
-    print(f"Initial population:\n{ga.get_population()}")
-    print(f"Final population:\n{ga.get_population()}")
-    print(f"Best individuals:\n{ga.run_evolution(config.iterations)}")
+    print("Initial population:")
+    for chromosome in ga.get_population():
+        print(format_chromosome(chromosome))
+    print()
+
+    best_individuals = ga.run_evolution(config.iterations)
+    print()
+
+    print("Best in final population:")
+    for chromosome, fitness in best_individuals.items():
+        print(f"{format_chromosome(chromosome)}  fitness = {fitness:.4f}")
+    print()
+
+    print("Final population:")
+    for chromosome in ga.get_population():
+        print(format_chromosome(chromosome))
 
 if __name__ == "__main__":
     main()
