@@ -6,7 +6,7 @@
     "population_size": 5,
     "crossover_signal": 3,
     "chromosome_length": 5,
-    "seed": 4004,
+    "seed": 2354,
     "optimum_fitness": 0.0,
     "target_error": 1e-6,
     "lower_bound": -1.0,

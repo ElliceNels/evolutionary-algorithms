@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from genetic_algorithm import Chromosome, GeneticAlgorithm
+from genetic_algorithm import GeneticAlgorithm
 from config import Config
 
 def load_config(file_path: str | Path) -> Config:
@@ -11,12 +11,8 @@ def load_config(file_path: str | Path) -> Config:
     return Config(**config_data)
 
 
-def format_chromosome(chromosome: Chromosome) -> str:
-    return "(" + ", ".join(f"{gene:.4f}" for gene in chromosome) + ")"
-
-
 def main():
-    config = load_config("config.json")
+    config: Config = load_config("config.json")
 
     ga = GeneticAlgorithm(
         config.crossover_rate,
@@ -34,28 +30,7 @@ def main():
         evaluation_budget=config.evaluation_budget,
     )
 
-    print("Initial population:")
-    for chromosome in ga.get_population():
-        print(format_chromosome(chromosome))
-    print()
-
-    best_individuals = ga.run_evolution()
-    print()
-
-    print("Best across all evaluations:")
-    for chromosome, fitness in best_individuals.items():
-        print(f"{format_chromosome(chromosome)}  fitness = {fitness:.4e}, error = {ga.get_error(fitness):.4e}")
-
-    print(f"Objective evaluations: {ga.evaluations}")
-    if ga.first_target_evaluation is None:
-        print("Target error was not reached.")
-    else:
-        print(f"Target error first reached at evaluation {ga.first_target_evaluation}.")
-    print()
-
-    print("Final population:")
-    for chromosome in ga.get_population():
-        print(format_chromosome(chromosome))
+    print(ga.run_evolution(save_report=True))
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,6 @@
+import json
 import random
+from pathlib import Path
 
 
 Chromosome = tuple[float, ...]
@@ -40,6 +42,7 @@ class GeneticAlgorithm:
         self.upper_bound = upper_bound
         self.evaluation_budget = evaluation_budget
         self.evaluations = 0
+        self.report: dict | None = None
         self.best_chromosome: Chromosome = ()
         self.best_fitness = float("inf")
         self.first_target_evaluation: int | None = None
@@ -162,16 +165,25 @@ class GeneticAlgorithm:
 
         return working_population
 
-    def run_evolution(self) -> dict[Chromosome, float]:
-        """Use the full evaluation budget and return the best solution seen."""
+    def run_evolution(
+        self,
+        save_report: bool = False,
+        report_path: str | Path = "reports/report.json",
+    ) -> str:
+        """Use the full budget, store the report, and return its console format."""
+        initial_population = self.get_population().copy()
+        generations = []
         generation = 0
         while True:
             generation_best = min(self._fitness.values())
-            generation_error = self.get_error(generation_best)
-            print(
-                f"Generation {generation}: Best fitness this generation = {generation_best:.4e}, "
-                f"error = {generation_error:.4e}"
-            )
+            generations.append({
+                "generation": generation,
+                "evaluations": self.evaluations,
+                "best_fitness": generation_best,
+                "error": self.get_error(generation_best),
+                "best_so_far_fitness": self.best_fitness,
+                "best_so_far_error": self.get_error(self.best_fitness),
+            })
 
             remaining_budget = self.evaluation_budget - self.evaluations
             if remaining_budget == 0:
@@ -187,7 +199,62 @@ class GeneticAlgorithm:
             self._fitness.update(scores)
             generation += 1
 
-        return {self.best_chromosome: self.best_fitness}
+        report = {
+            "best_chromosome": self.best_chromosome,
+            "best_fitness": self.best_fitness,
+            "best_error": self.get_error(self.best_fitness),
+            "optimum_fitness": self.optimum_fitness,
+            "target_error": self.target_error,
+            "evaluation_budget": self.evaluation_budget,
+            "evaluations": self.evaluations,
+            "first_target_evaluation": self.first_target_evaluation,
+            "initial_population": initial_population,
+            "final_population": self.get_population().copy(),
+            "generations": generations,
+        }
+        if save_report:
+            path = Path(report_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("w", encoding="utf-8") as file:
+                json.dump(report, file, indent=2)
+                file.write("\n")
+
+        return self.format_report(report)
+
+    def format_report(self, report) -> str:
+        """Format the stored report for the console."""
+        if report is None:
+            raise RuntimeError("Run evolution before formatting the report.")
+
+        lines = ["Initial population:"]
+        lines.extend(self._format_chromosome(chromosome) for chromosome in report["initial_population"])
+        lines.append("")
+        for generation in report["generations"]:
+            lines.append(
+                f"Generation {generation['generation']}: "
+                f"Best fitness this generation = {generation['best_fitness']:.4e}, "
+                f"error = {generation['error']:.4e}"
+            )
+
+        lines.extend(["", "Best across all evaluations:"])
+        lines.append(
+            f"{self._format_chromosome(report['best_chromosome'])}  "
+            f"fitness = {report['best_fitness']:.4e}, error = {report['best_error']:.4e}"
+        )
+        lines.append(f"Objective evaluations: {report['evaluations']}")
+        first_hit = report["first_target_evaluation"]
+        if first_hit is None:
+            lines.append("Target error was not reached.")
+        else:
+            lines.append(f"Target error first reached at evaluation {first_hit}.")
+
+        lines.extend(["", "Final population:"])
+        lines.extend(self._format_chromosome(chromosome) for chromosome in report["final_population"])
+        return "\n".join(lines)
+
+    @staticmethod
+    def _format_chromosome(chromosome: Chromosome) -> str:
+        return "(" + ", ".join(f"{gene:.4f}" for gene in chromosome) + ")"
 
     def get_population(self):
         return self.current_population
