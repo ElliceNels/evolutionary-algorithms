@@ -18,17 +18,15 @@ def main():
     ga = GeneticAlgorithm(
         config.crossover_rate,
         config.mutation_rate,
+        config.number_of_offspring,
         config.population_size,
-        config.max_depth,
-        config.target_lookup,
-        config.seed
+        config.crossover_signal,
+        config.chromosome_length
     )
 
     print(f"Initial population:\n{ga.get_population()}")
     print(f"Final population:\n{ga.get_population()}")
-    resulting_best = ga.run_evolution(config.iterations)
-    for best in resulting_best:
-        print(f"Best individuals:\n{ga.display_tree(best)} with fitness: {resulting_best[best]}")
+    print(f"Best individuals:\n{ga.run_evolution(config.iterations)}")
 
 if __name__ == "__main__":
     main()
