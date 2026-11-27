@@ -104,23 +104,32 @@ class GeneticAlgorithm:
         return [offspring1, offspring2]
     
     def _update_mutation_rate(self, generation: int):
-        """Update the mutation rate using the sigmoid rule
-        proposed by Kanwal et al. (2013).
-        """
 
         # Reset stagnation when a better solution is found
         if self.best_fitness < self.previous_best_fitness:
             self.last_improvement_generation = generation
             self.previous_best_fitness = self.best_fitness
 
-        # Calculate generations without improvement
+        # Generations without improvement
         x = generation - self.last_improvement_generation
 
-        # Calculate sigmoid
-        sigmoid = 1 / (1 + math.exp(-x))
+        # Adaptive mutation parameters
+        k = 0.05 #scaling factor
+        min_mutation_rate = 0.01
+        max_mutation_rate = 0.05
 
-        # Scale sigmoid to the range [0, 1]
-        self.mutation_rate = 2 * (sigmoid - 0.5)
+        # Sigmoid rule
+        sigmoid = 1 / (1 + math.exp(-k * x))
+
+        # Normalise sigmoid to [0, 1]
+        adaptive_rate = 2 * (sigmoid - 0.5)
+
+        # Scale mutation rate to the defined boundaries
+        self.mutation_rate = (
+            min_mutation_rate
+            + (max_mutation_rate - min_mutation_rate)
+            * adaptive_rate
+        )
 
     def _apply_mutation(self, individual: Chromosome) -> Chromosome:
         """Perturb each selected gene by a bounded uniform offset."""
