@@ -304,6 +304,18 @@ Work on presentation
 ### Week 05: Focus Area - Presentation 
 
 - **Activities Completed:**
+Finalised the presentation and completed a full end-to-end practice run to ensure a clear explanation of our research topic, proposed methodology and design decisions.
+Started implementing code for our research. 
+- **Key Insights / Discoveries:**
+Developed a clearer understanding of our proposed adaptive mutation strategy, overall methodology and how to justify our design decisions using existing academic research.
+- **Obstacles Encountered & How You Overcame Them:**
+Initially struggled to present the technical concepts concisely within the allocated timeframe. Overcame this by refining the slides, simplifying explanations and practising the presentation.
+- **Plan for Next Week:**
+Complete the code for the research and conduct the benchmark.
+
+### Week 06: Focus Area - Software
+
+- **Activities Completed:**
 - **Key Insights / Discoveries:**
 - **Obstacles Encountered & How You Overcame Them:**
 - **Plan for Next Week:**
