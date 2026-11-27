@@ -1,21 +1,14 @@
 {
-    "seed": 4004,
     "crossover_rate": 0.8,
     "mutation_rate": 0.01,
-    "population_size": 200,
-    "iterations": 150,
-    "max_depth": 8,
-    "target_lookup": {
-        "-5": -255,
-        "-4": -116,
-        "-3": -39,
-        "-2": -6,
-        "-1": 1,
-        "0": 0,
-        "1": 9,
-        "2": 46,
-        "3": 129,
-        "4": 276,
-        "5": 505
-    }
+    "mutation_step": 0.3,
+    "number_of_offspring": 2,
+    "population_size": 5,
+    "crossover_signal": 3,
+    "chromosome_length": 5,
+    "seed": 2354,
+    "optimum_fitness": 0.0,
+    "target_error": 1e-6,
+    "lower_bound": -1.0,
+    "upper_bound": 1.0
 }

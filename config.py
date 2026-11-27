@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Config(BaseModel):
@@ -9,8 +9,29 @@ class Config(BaseModel):
     """
     crossover_rate: float = Field(ge=0.0, le=1.0)
     mutation_rate: float = Field(ge=0.0, le=1.0)
-    population_size: int = Field(gt=2)
-    iterations: int = Field(gt=0)
-    max_depth: int = Field(gt=0)
-    target_lookup: dict[float, float]
-    seed: int | None = None
+    mutation_step: float = Field(ge=0.0, allow_inf_nan=False)
+    population_size: int = Field(ge=2)
+    number_of_offspring: int = Field(gt=0)
+    chromosome_length: int = Field(gt=0)
+    crossover_signal: int = Field(gt=0)
+    seed: int
+    optimum_fitness: float = Field(default=0.0, allow_inf_nan=False)
+    target_error: float = Field(ge=0.0, allow_inf_nan=False)
+    lower_bound: float = Field(allow_inf_nan=False)
+    upper_bound: float = Field(allow_inf_nan=False)
+    evaluation_budget: int = Field(
+        default_factory=lambda data: 10_000 * data["chromosome_length"],
+        gt=0,
+    )
+
+    @model_validator(mode="after")
+    def validate_ga_settings(self) -> "Config":
+        if self.number_of_offspring > self.population_size:
+            raise ValueError("number_of_offspring must not exceed population_size")
+        if self.crossover_signal >= self.chromosome_length:
+            raise ValueError("crossover_signal must be less than chromosome_length")
+        if self.lower_bound >= self.upper_bound:
+            raise ValueError("lower_bound must be less than upper_bound")
+        if self.evaluation_budget < self.population_size:
+            raise ValueError("evaluation_budget must cover the initial population")
+        return self

@@ -11,24 +11,26 @@ def load_config(file_path: str | Path) -> Config:
     return Config(**config_data)
 
 
-
 def main():
-    config = load_config("config.json")
+    config: Config = load_config("config.json")
 
     ga = GeneticAlgorithm(
         config.crossover_rate,
         config.mutation_rate,
+        config.number_of_offspring,
         config.population_size,
-        config.max_depth,
-        config.target_lookup,
-        config.seed
+        config.crossover_signal,
+        config.chromosome_length,
+        mutation_step=config.mutation_step,
+        seed=config.seed,
+        optimum_fitness=config.optimum_fitness,
+        target_error=config.target_error,
+        lower_bound=config.lower_bound,
+        upper_bound=config.upper_bound,
+        evaluation_budget=config.evaluation_budget,
     )
 
-    print(f"Initial population:\n{ga.get_population()}")
-    print(f"Final population:\n{ga.get_population()}")
-    resulting_best = ga.run_evolution(config.iterations)
-    for best in resulting_best:
-        print(f"Best individuals:\n{ga.display_tree(best)} with fitness: {resulting_best[best]}")
+    print(ga.run_evolution(save_report=True))
 
 if __name__ == "__main__":
     main()

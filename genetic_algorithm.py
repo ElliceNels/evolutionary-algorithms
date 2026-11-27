@@ -1,190 +1,158 @@
-import operator
-from copy import deepcopy
+import json
 import random
-from anytree import Node
+from collections.abc import Callable
+from pathlib import Path
+from statistics import fmean, pstdev
 
-OPERATIONS = {
-    "+": operator.add,
-    "-": operator.sub,
-    "*": operator.mul,
-    "/": lambda left, right: left / right if right != 0 else 0,
-}
-OPERANDS = ["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "x"]
+
+Chromosome = tuple[float, ...]
 
 class GeneticAlgorithm:
     """
     A class to represent a genetic algorithm.
     """
 
-    def __init__(self, crossover_rate, mutation_rate, population_size, max_depth, target_lookup, seed=None):
+    def __init__(
+        self,
+        crossover_rate: float,
+        mutation_rate: float,
+        number_of_offspring: int,
+        population_size: int,
+        crossover_signal: int,
+        chromosome_length: int,
+        mutation_step: float,
+        evaluation_budget: int,
+        seed: int | None = None,
+        optimum_fitness: float = 0.0,
+        target_error: float = 0.0,
+        lower_bound: float = -1.0,
+        upper_bound: float = 1.0,
+        objective: Callable[[Chromosome], float] | None = None,
+    ):
+        if evaluation_budget < population_size:
+            raise ValueError("evaluation_budget must cover the initial population")
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
+        self.mutation_step = mutation_step
+        self.number_of_offspring = number_of_offspring
         self.population_size = population_size
+        self.crossover_signal = crossover_signal
+        self.chromosome_length = chromosome_length
+        self.rng = random.Random(seed)
+        self.optimum_fitness = optimum_fitness
+        self.target_error = target_error
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+        self.evaluation_budget = evaluation_budget
+        self.objective = objective if objective is not None else self._default_sphere_fitness
+        self.evaluations = 0
+        self.report: dict | None = None
+        self.best_chromosome: Chromosome = ()
+        self.best_fitness = float("inf")
+        self.first_target_evaluation: int | None = None
         self.current_population = []
-        self.max_depth = max_depth
-        self.target_lookup = target_lookup
-        self.seed = seed
         self._initialise_population()
+        self._fitness = self._evaluate_population(self.current_population)
 
     def _initialise_population(self):
-        """
-        Initialise the population with random individuals.
-
-        Args:
-            seed (int, optional): The seed for the random number generator. Defaults to None.
-        """
-
-        if self.seed is not None:
-            random.seed(self.seed)
-
-        self.current_population = []
-
+        """Initialise the population with random individuals."""
         for _ in range(self.population_size):
-            self.current_population.append(self._new_individual())
-
-    def _new_individual(self, depth=0):
-        """Generate a new random individual/tree ().
-
-        Returns:
-            Node: A new random individual (tree).
-        """
-        if depth >= self.max_depth:
-            # Return a terminal node (leaf node) with a random value
-            return Node(random.choice(OPERANDS))
-        else:
-            # Return a non-terminal node (operators)
-            root = Node(random.choice(tuple(OPERATIONS)))
-
-            left =  self._new_individual(depth + 1)
-            right = self._new_individual(depth + 1)
-
-            left.parent = root
-            right.parent = root
-
-            return root
-
+            chromosome = tuple(
+                self.rng.uniform(self.lower_bound, self.upper_bound)
+                for _ in range(self.chromosome_length)
+            )
+            self.current_population.append(chromosome)
 
     def _select_parent(self, population):
         """Select a parent from the population using tournament selection."""
 
-        individual1, individual2 = random.sample(population, 2)
+        individual1, individual2 = self.rng.sample(population, 2)
 
-        if self._check_fitness(individual1) >= self._check_fitness(individual2):
+        if self._fitness[individual1] <= self._fitness[individual2]:
             return individual1
 
         return individual2
 
-    def _apply_crossover(self, individual1: Node, individual2: Node) -> list[Node]:
+    def _apply_crossover(self, individual1: Chromosome, individual2: Chromosome) -> list[Chromosome]:
         """Apply crossover or reproduction to two individuals to produce offspring.
 
         Args:
-            individual1 (Node): The first individual.
-            individual2 (Node): The second individual.
+            individual1 (Chromosome): The first individual.
+            individual2 (Chromosome): The second individual.
 
         Returns:
-            list[Node]: A list of the offspring produced by crossover or reproduction.
+            list[Chromosome]: A list of the offspring produced by crossover or reproduction.
         """
-        offspring1 = deepcopy(individual1)
-        offspring2 = deepcopy(individual2)
 
         # Decide whether crossover occurs
-        if random.random() >= self.crossover_rate:
-            # Reproduction: return copies of the parents
-            return [offspring1, offspring2]
+        if self.rng.random() >= self.crossover_rate:
+            # The parent tuples are immutable.
+            return [individual1, individual2]
 
+        # Use the configured crossover point
+        point = self.crossover_signal
 
-        # Use randomly selected crossover point to create offspring
-        crossover_node1: Node = random.choice(list(offspring1.descendants) + [offspring1])
-        crossover_node2: Node = random.choice(list(offspring2.descendants) + [offspring2])
-        # Create two offspring by swapping subtrees at the crossover nodes
-        crossover_node1_parent = crossover_node1.parent
-        crossover_node2_parent = crossover_node2.parent
-
-        crossover_node1.parent = None
-        crossover_node2.parent = None
-        crossover_node1.parent = crossover_node2_parent
-        crossover_node2.parent = crossover_node1_parent
+        #Create two offspring
+        offspring1 = individual1[:point] + individual2[point:]
+        offspring2 = individual2[:point] + individual1[point:]
 
         return [offspring1, offspring2]
 
-    def _apply_mutation(self, individual: Node) -> Node:
-        """Apply mutation to an individual by flipping bits with a certain probability.
+    def _apply_mutation(self, individual: Chromosome) -> Chromosome:
+        """Perturb each selected gene by a bounded uniform offset."""
+        mutated_individual = []
 
-        Args:
-            individual (Node): The individual to mutate.
+        for gene in individual:
+            if self.rng.random() < self.mutation_rate:
+                gene += self.rng.uniform(-self.mutation_step, self.mutation_step)
+                gene = min(self.upper_bound, max(self.lower_bound, gene))
+            mutated_individual.append(gene)
 
-        Returns:
-            Node: The mutated individual.
-        """
+        return tuple(mutated_individual)
 
-        if not (random.random() < self.mutation_rate):
-            return individual
+    def _check_fitness(self, individual: Chromosome) -> float:
+        """Evaluate the individual using the configured objective."""
+        return float(self.objective(individual))
 
-        # Copy the individual to avoid modifying the original
-        mutated_individual = deepcopy(individual)
+    @staticmethod
+    def _default_sphere_fitness(individual: Chromosome) -> float:
+        """Calculate the sum of squared genes, with a minimum at zero."""
+        return sum(gene ** 2 for gene in individual)
 
-        node_to_mutate: Node = (random.choice(list(mutated_individual.descendants)))
-        if node_to_mutate.is_leaf:
-            # get all leaf nodes
-            node_to_mutate.name = random.choice(OPERANDS)
-        else:
-            # get all non-leaf nodes
-            node_to_mutate.name = random.choice(list(OPERATIONS.keys()))
+    def get_error(self, fitness: float) -> float:
+        """Return the difference between a fitness score and the known optimum."""
+        return fitness - self.optimum_fitness
 
-        return mutated_individual
+    def _evaluate_population(self, population):
+        scores = {}
+        for individual in population:
+            fitness = self._check_fitness(individual)
+            self.evaluations += 1
+            scores[individual] = fitness
+            if fitness < self.best_fitness:
+                self.best_chromosome = individual
+                self.best_fitness = fitness
+            if (
+                self.first_target_evaluation is None
+                and self.get_error(fitness) <= self.target_error
+            ):
+                self.first_target_evaluation = self.evaluations
+        return scores
 
-
-    def _evaluate_individual(self, individual, x) -> int:
-        """Evaluate the fitness of an individual.
-
-        Args:
-            individual (Node): The root node of the individual to evaluate.
-
-        Returns:
-            int: The fitness score of the individual.
-        """
-
-        # Evaluate the individual using a depth-first traversal of the tree
-        def evaluate_node(node: Node) -> int | float:
-            if node.is_leaf:
-                if node.name == "x":
-                    return x
-                return int(node.name)
-
-            left, right = node.children
-            left_value = evaluate_node(left)
-            right_value = evaluate_node(right)
-
-            return OPERATIONS[node.name](left_value, right_value)
-
-        return evaluate_node(individual)
-
-    def _check_fitness(self, individual) -> int:
-        """Calculate the fitness score of an individual."""
-
-        error = 0
-
-        x_values = self.target_lookup.keys()
-        for x in x_values:
-            prediction = self._evaluate_individual(individual, x)  # Example evaluation with x=1
-            target = self.target_lookup[x]
-            mse = (abs(prediction - target) ** 2) / len(x_values)
-            error += mse
-        return 1 / (1 + error)  # Fitness is inversely related to error
-
-    def _generate_new_population(self, population):
+    def _generate_new_population(self, population, offspring_count):
         """Perform selection, crossover, and mutation to generate a new population.
 
         Args:
-            population (list[str]): The current population of individuals.
+            population (list[Chromosome]): The current population of individuals.
+            offspring_count (int): The number of offspring to generate.
 
         Returns:
-            list[str]: The new population of individuals after selection, crossover, and mutation.
+            list[Chromosome]: The new population of individuals after selection, crossover, and mutation.
         """
 
         working_population = []
 
-        while len(working_population) < self.population_size:
+        while len(working_population) < offspring_count:
             # Select two parents
             parent1 = self._select_parent(population)
             parent2 = self._select_parent(population)
@@ -193,77 +161,131 @@ class GeneticAlgorithm:
             offsprings = self._apply_crossover(parent1, parent2)
 
             # Apply mutation to offspring
-            for offspring in offsprings:
+            for offspring in offsprings[:self.number_of_offspring]:
+
                 mutated_offspring = self._apply_mutation(offspring)
 
                 # Add to the new population
                 working_population.append(mutated_offspring)
 
                 # Stop if population is full
-                if len(working_population) >= self.population_size:
+                if len(working_population) >= offspring_count:
                     break
 
         return working_population
 
-    def run_evolution(self, iterations):
-        """Run the evolution process for a specified number of iterations.
+    def run_evolution(
+        self,
+        save_report: bool = False,
+        report_path: str | Path = "reports/report.json",
+    ) -> str:
+        """Use the full budget, store the report, and return its console format."""
+        initial_population = self.get_population().copy()
+        generations = []
+        generation = 0
+        while True:
+            # Look up the fitness PER individual (duplicates must be counted to keep stats correct).
+            fitness_scores = [self._fitness[individual] for individual in self.current_population]
+            generation_best = min(fitness_scores)
+            generations.append({
+                "generation": generation,
+                "evaluations": self.evaluations,
+                "best_fitness": generation_best,
+                "mean_fitness": fmean(fitness_scores),
+                "fitness_std_dev": pstdev(fitness_scores),
+                "error": self.get_error(generation_best),
+                "best_so_far_fitness": self.best_fitness,
+                "best_so_far_error": self.get_error(self.best_fitness),
+            })
 
-        Args:
-            iterations (int): The number of iterations to run the evolution process.
-
-        Returns:
-            dict[str, Node]: A dictionary containing the best individuals and their fitness scores.
-        """
-
-        for generation in range(iterations):
-
-            # Get the best individuals from the current population
-            best_individuals = self.get_best_individuals()
-            best_fitness = max(best_individuals.values())
-
-            print(f"Generation {generation}: Best fitness = {best_fitness}")
-
-            # Stop if optimal solution found
-            if best_fitness == 1.0:
-                print("Optimal solution found!")
+            remaining_budget = self.evaluation_budget - self.evaluations
+            if remaining_budget == 0:
                 break
 
-            self.current_population = self._generate_new_population(
-                self.current_population
+            offspring_count = min(self.population_size, remaining_budget)
+            offspring = self._generate_new_population(self.current_population, offspring_count)
+            scores = self._evaluate_population(offspring)
+            # Keep the remaining parents when the budget allows only a partial generation.
+            remaining = self.current_population[offspring_count:]
+            self.current_population = offspring + remaining
+            self._fitness = {individual: self._fitness[individual] for individual in remaining}
+            self._fitness.update(scores)
+            generation += 1
+
+        report = {
+            "best_chromosome": self.best_chromosome,
+            "best_fitness": self.best_fitness,
+            "best_error": self.get_error(self.best_fitness),
+            "optimum_fitness": self.optimum_fitness,
+            "target_error": self.target_error,
+            "evaluation_budget": self.evaluation_budget,
+            "evaluations": self.evaluations,
+            "first_target_evaluation": self.first_target_evaluation,
+            "initial_population": initial_population,
+            "final_population": self.get_population().copy(),
+            "generations": generations,
+        }
+        if save_report:
+            path = Path(report_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("w", encoding="utf-8") as file:
+                json.dump(report, file, indent=2)
+                file.write("\n")
+
+        return self.format_report(report)
+
+    def format_report(self, report) -> str:
+        """Format the stored report for the console."""
+        if report is None:
+            raise RuntimeError("Run evolution before formatting the report.")
+
+        lines = ["Initial population:"]
+        lines.extend(self._format_chromosome(chromosome) for chromosome in report["initial_population"])
+        lines.append("")
+        for generation in report["generations"]:
+            mean = generation.get("mean_fitness")
+            std_dev = generation.get("fitness_std_dev")
+            mean_text = "N/A" if mean is None else f"{mean:.4e}"
+            std_dev_text = "N/A" if std_dev is None else f"{std_dev:.4e}"
+            lines.append(
+                f"Generation {generation['generation']}: "
+                f"Best fitness this generation = {generation['best_fitness']:.4e}, "
+                f"error = {generation['error']:.4e}, "
+                f"mean fitness = {mean_text}, fitness std dev = {std_dev_text}"
             )
 
-        return self.get_best_individuals()
+        lines.extend(["", "Best across all evaluations:"])
+        lines.append(
+            f"{self._format_chromosome(report['best_chromosome'])}  "
+            f"fitness = {report['best_fitness']:.4e}, error = {report['best_error']:.4e}"
+        )
+        lines.append(f"Objective evaluations: {report['evaluations']}")
+        first_hit = report["first_target_evaluation"]
+        if first_hit is None:
+            lines.append("Target error was not reached.")
+        else:
+            lines.append(f"Target error first reached at evaluation {first_hit}.")
+
+        lines.extend(["", "Final population:"])
+        lines.extend(self._format_chromosome(chromosome) for chromosome in report["final_population"])
+        return "\n".join(lines)
+
+    @staticmethod
+    def _format_chromosome(chromosome: Chromosome) -> str:
+        return "(" + ", ".join(f"{gene:.4f}" for gene in chromosome) + ")"
 
     def get_population(self):
         return self.current_population
 
-    def get_best_individuals(self, population=None) -> dict[str, Node]:
+    def get_best_individuals(self, population=None) -> dict[Chromosome, float]:
         """Get the best individuals from the population."""
 
         if population is None:
-            population = self.current_population
+            scores = self._fitness
+        else:
+            scores = {
+                individual: self._fitness[individual] for individual in population
+            }
 
-        best_fitness = max(
-            self._check_fitness(individual)
-            for individual in population
-        )
-
-        best_individuals = {}
-
-        for individual in population:
-            if self._check_fitness(individual) == best_fitness:
-                best_individuals[individual] = best_fitness
-
-        return best_individuals
-
-
-    def display_tree(self, root: Node):
-        """Display the tree structure of an individual using anytree.
-
-        Args:
-            root (Node): The root node of the tree to display.
-        """
-        from anytree import RenderTree
-
-        for pre, fill, node in RenderTree(root):
-            print(f"{pre}{node.name}")
+        best_fitness = min(scores.values())
+        return {individual: score for individual, score in scores.items() if score == best_fitness}
