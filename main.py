@@ -28,6 +28,7 @@ def main():
         lower_bound=config.lower_bound,
         upper_bound=config.upper_bound,
         evaluation_budget=config.evaluation_budget,
+        adaptive_mutation=config.adaptive_mutation,
     )
 
     print(ga.run_evolution(save_report=True))

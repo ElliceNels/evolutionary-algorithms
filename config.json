@@ -10,5 +10,6 @@
     "optimum_fitness": 0.0,
     "target_error": 1e-6,
     "lower_bound": -1.0,
-    "upper_bound": 1.0
+    "upper_bound": 1.0,
+    "adaptive_mutation": true
 }

@@ -1,5 +1,6 @@
 import json
 import random
+import math
 from collections.abc import Callable
 from pathlib import Path
 from statistics import fmean, pstdev
@@ -28,12 +29,16 @@ class GeneticAlgorithm:
         lower_bound: float = -1.0,
         upper_bound: float = 1.0,
         objective: Callable[[Chromosome], float] | None = None,
+        adaptive_mutation: bool = False,
     ):
         if evaluation_budget < population_size:
             raise ValueError("evaluation_budget must cover the initial population")
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
         self.mutation_step = mutation_step
+        self.adaptive_mutation = adaptive_mutation
+        self.last_improvement_generation = 0
+        self.previous_best_fitness = float("inf")
         self.number_of_offspring = number_of_offspring
         self.population_size = population_size
         self.crossover_signal = crossover_signal
@@ -97,6 +102,25 @@ class GeneticAlgorithm:
         offspring2 = individual2[:point] + individual1[point:]
 
         return [offspring1, offspring2]
+    
+    def _update_mutation_rate(self, generation: int):
+        """Update the mutation rate using the sigmoid rule
+        proposed by Kanwal et al. (2013).
+        """
+
+        # Reset stagnation when a better solution is found
+        if self.best_fitness < self.previous_best_fitness:
+            self.last_improvement_generation = generation
+            self.previous_best_fitness = self.best_fitness
+
+        # Calculate generations without improvement
+        x = generation - self.last_improvement_generation
+
+        # Calculate sigmoid
+        sigmoid = 1 / (1 + math.exp(-x))
+
+        # Scale sigmoid to the range [0, 1]
+        self.mutation_rate = 2 * (sigmoid - 0.5)
 
     def _apply_mutation(self, individual: Chromosome) -> Chromosome:
         """Perturb each selected gene by a bounded uniform offset."""
@@ -184,6 +208,10 @@ class GeneticAlgorithm:
         generations = []
         generation = 0
         while True:
+            # Update mutation rate before generating offspring
+            if self.adaptive_mutation:
+                self._update_mutation_rate(generation)
+
             # Look up the fitness PER individual (duplicates must be counted to keep stats correct).
             fitness_scores = [self._fitness[individual] for individual in self.current_population]
             generation_best = min(fitness_scores)
@@ -196,6 +224,8 @@ class GeneticAlgorithm:
                 "error": self.get_error(generation_best),
                 "best_so_far_fitness": self.best_fitness,
                 "best_so_far_error": self.get_error(self.best_fitness),
+                "mutation_rate": self.mutation_rate,
+                "generations_without_improvement": (generation - self.last_improvement_generation if self.adaptive_mutation else None),
             })
 
             remaining_budget = self.evaluation_budget - self.evaluations
@@ -224,6 +254,7 @@ class GeneticAlgorithm:
             "initial_population": initial_population,
             "final_population": self.get_population().copy(),
             "generations": generations,
+            "adaptive_mutation": self.adaptive_mutation,
         }
         if save_report:
             path = Path(report_path)
@@ -251,7 +282,9 @@ class GeneticAlgorithm:
                 f"Generation {generation['generation']}: "
                 f"Best fitness this generation = {generation['best_fitness']:.4e}, "
                 f"error = {generation['error']:.4e}, "
-                f"mean fitness = {mean_text}, fitness std dev = {std_dev_text}"
+                f"mean fitness = {mean_text}, "
+                f"fitness std dev = {std_dev_text}, "
+                f"mutation rate = {generation['mutation_rate']:.4f}"
             )
 
         lines.extend(["", "Best across all evaluations:"])
