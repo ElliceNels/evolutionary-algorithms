@@ -1,6 +1,6 @@
 {
     "crossover_rate": 0.8,
-    "mutation_rate": 0.01,
+    "mutation_rate": 0.2,
     "mutation_step": 0.3,
     "number_of_offspring": 2,
     "population_size": 50,

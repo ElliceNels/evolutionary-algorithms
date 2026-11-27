@@ -116,7 +116,7 @@ class GeneticAlgorithm:
         # Adaptive mutation parameters
         k = 0.05 #scaling factor
         min_mutation_rate = 0.01
-        max_mutation_rate = 0.05
+        max_mutation_rate = 0.20
 
         # Sigmoid rule
         sigmoid = 1 / (1 + math.exp(-k * x))
